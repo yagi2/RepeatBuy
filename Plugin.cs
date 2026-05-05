@@ -33,7 +33,7 @@ public sealed class Plugin : IDalamudPlugin
     public Plugin()
     {
         Configuration = PluginInterface.GetPluginConfig() as Configuration ?? new Configuration();
-        Strings.SetLanguage(Configuration.UseJapanese);
+        Strings.SetLanguage(Configuration.ResolveLanguage(ClientState.ClientLanguage));
 
         ConfigWindow = new ConfigWindow(Configuration);
         MainWindow = new MainWindow(Configuration, ToggleConfigUi);

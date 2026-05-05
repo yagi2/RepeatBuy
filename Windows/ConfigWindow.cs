@@ -10,6 +10,15 @@ public sealed class ConfigWindow : Window, IDisposable
 {
     private readonly Configuration configuration;
 
+    private static readonly (int Value, Func<string> Label)[] LanguageOptions =
+    {
+        (-1, () => "Auto / 自動 / Auto / Auto"),
+        ((int)Language.English,  () => Strings.LanguageNameEnglish),
+        ((int)Language.Japanese, () => Strings.LanguageNameJapanese),
+        ((int)Language.German,   () => Strings.LanguageNameGerman),
+        ((int)Language.French,   () => Strings.LanguageNameFrench)
+    };
+
     public ConfigWindow(Configuration configuration)
         : base(Strings.ConfigWindowTitle + "###RepeatBuyConfig",
             ImGuiWindowFlags.AlwaysAutoResize | ImGuiWindowFlags.NoCollapse)
@@ -41,18 +50,12 @@ public sealed class ConfigWindow : Window, IDisposable
             configuration.Save();
         }
 
-        bool jp = configuration.UseJapanese;
-        if (ImGui.Checkbox(Strings.SettingsLanguage, ref jp))
-        {
-            configuration.UseJapanese = jp;
-            Strings.SetLanguage(jp);
-            configuration.Save();
-        }
+        DrawLanguageCombo();
 
         ImGui.Separator();
 
         int delay = configuration.PurchaseDelayMs;
-        ImGui.SetNextItemWidth(180f);
+        ImGui.SetNextItemWidth(220f);
         if (ImGui.SliderInt(Strings.SettingsDelay, ref delay, 100, 1500))
         {
             configuration.PurchaseDelayMs = delay;
@@ -62,5 +65,37 @@ public sealed class ConfigWindow : Window, IDisposable
         ImGui.Spacing();
         if (ImGui.Button(Strings.SettingsSave, new Vector2(120, 0)))
             configuration.Save();
+    }
+
+    private void DrawLanguageCombo()
+    {
+        int currentValue = configuration.Language;
+        int currentIndex = 0;
+        for (int i = 0; i < LanguageOptions.Length; i++)
+        {
+            if (LanguageOptions[i].Value == currentValue)
+            {
+                currentIndex = i;
+                break;
+            }
+        }
+
+        string preview = LanguageOptions[currentIndex].Label();
+        ImGui.SetNextItemWidth(220f);
+        if (ImGui.BeginCombo(Strings.SettingsLanguage, preview))
+        {
+            for (int i = 0; i < LanguageOptions.Length; i++)
+            {
+                bool selected = i == currentIndex;
+                if (ImGui.Selectable(LanguageOptions[i].Label(), selected))
+                {
+                    configuration.Language = LanguageOptions[i].Value;
+                    Strings.SetLanguage(configuration.ResolveLanguage(Plugin.ClientState.ClientLanguage));
+                    configuration.Save();
+                }
+                if (selected) ImGui.SetItemDefaultFocus();
+            }
+            ImGui.EndCombo();
+        }
     }
 }

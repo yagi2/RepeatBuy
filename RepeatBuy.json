@@ -1,8 +1,8 @@
 {
-  "Author": "magical.reisen",
+  "Author": "yagi2",
   "Name": "RepeatBuy",
-  "Punchline": "Repeatedly buy items from NPC shops with stop conditions.",
-  "Description": "Adds a small overlay next to the standard NPC Shop window so you can mass-buy the currently selected item. Supports four stop conditions: fixed count (allows >99), buy until you own N total, buy until gil drops below a threshold, and buy until inventory is full. Shows an estimated total cost before starting and warns if you cannot afford it.",
+  "Punchline": "Repeat-buy items from NPC shops with stop conditions.",
+  "Description": "Embeds a small overlay next to the standard NPC Shop window. Pick an item from the mirrored shop list, choose a stop condition (fixed count >99 OK, until owned, gil floor, inventory full), and the plugin handles the repeat purchases for you. Shows an estimated total cost popup before starting and warns in red if you cannot afford it. Bilingual UI (EN/JA/DE/FR).",
   "ApplicableVersion": "any",
   "Tags": [
     "shop",
@@ -11,6 +11,7 @@
     "buy",
     "merchant"
   ],
-  "RepoUrl": "",
+  "RepoUrl": "https://github.com/yagi2/RepeatBuy",
+  "IconUrl": "https://raw.githubusercontent.com/yagi2/RepeatBuy/main/images/icon.png",
   "Changelog": "0.1.0.0 — Initial release."
 }

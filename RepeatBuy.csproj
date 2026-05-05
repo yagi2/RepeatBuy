@@ -6,4 +6,10 @@
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <IsPackable>false</IsPackable>
   </PropertyGroup>
+  <ItemGroup>
+    <None Include="images\icon.png" Pack="true">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Link>images\icon.png</Link>
+    </None>
+  </ItemGroup>
 </Project>
