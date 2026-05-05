@@ -55,20 +55,53 @@ you while watching for the conditions that should make it stop.
 - Standard NPC `Shop` (gil-based) only. SpecialShop / InclusionShop / currency
   exchange windows are intentionally out of scope for this version.
 
+## Install
+
+In-game, open Dalamud settings (`/xlsettings`) → **Experimental** → **Custom Plugin Repositories**, then add:
+
+```
+https://raw.githubusercontent.com/yagi2/dalamud-plugins/main/repo.json
+```
+
+Save, then open the plugin installer (`/xlplugins`) and search for **RepeatBuy**.
+
+> Note: that URL is yagi2's shared plugin index — every plugin published by yagi2
+> appears under it, so adding it once is enough for any future plugins as well.
+
 ## Build
 
 ```
 dotnet build -c Release
 ```
 
-Output: `bin/Release/RepeatBuy.dll`. The Dalamud SDK uses your local
-Dalamud install at `%AppData%\XIVLauncher\addon\Hooks\dev\` for reference
-assemblies; no separate setup is required as long as you have Dalamud installed.
+The Dalamud SDK uses your local Dalamud install at
+`%AppData%\XIVLauncher\addon\Hooks\dev\` for reference assemblies; no separate
+setup is required as long as you have Dalamud installed.
+
+Output:
+
+- `bin/Release/RepeatBuy/RepeatBuy.dll` — the plugin assembly.
+- `bin/Release/RepeatBuy/latest.zip` — packaged archive ready for distribution.
 
 ## Install (dev)
 
-Drop the built `.dll` (and `RepeatBuy.json`) into a Dalamud dev plugin folder, or
-point Dalamud's *Dev Plugin Locations* at the `bin/Release` directory.
+Point Dalamud's *Dev Plugin Locations* at the `bin/Release/RepeatBuy` directory,
+or drop `RepeatBuy.dll` and `RepeatBuy.json` into a Dalamud dev plugin folder.
+
+## Release process (maintainer)
+
+1. Bump the version in `RepeatBuy.csproj` (`<Version>`) and `RepeatBuy.json`
+   (`Changelog`).
+2. `dotnet build -c Release` and verify `bin/Release/RepeatBuy/latest.zip`.
+3. Commit and push the version bump.
+4. Create a GitHub Release tagged `vX.Y.Z` and attach `latest.zip` as an asset
+   (the asset filename must remain `latest.zip`).
+5. In the [`yagi2/dalamud-plugins`](https://github.com/yagi2/dalamud-plugins)
+   repo, update this plugin's entry in `repo.json` (`AssemblyVersion`,
+   `Changelog`) and push to `main`.
+
+Once both pushes land, Dalamud picks up the new version on its next plugin-list
+refresh.
 
 ## License
 
