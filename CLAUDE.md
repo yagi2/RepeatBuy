@@ -19,7 +19,8 @@ RepeatBuy/
 ├── Plugin.cs                   # IDalamudPlugin entry, services, /repeatbuy command
 ├── Configuration.cs            # IPluginConfiguration, persisted user prefs
 ├── ShopWatcher.cs              # 150 ms framework poll, opens/closes the panel
-├── Localization/Strings.cs     # bilingual EN/JA strings, single toggle
+├── Localization/Strings.cs     # 6-language strings (EN/JA/DE/FR/ZH/KO)
+├── images/icon.png             # 512×512 plugin icon, copied to bin/Release/images/
 └── Windows/
     ├── ConfigWindow.cs         # settings window
     ├── MainWindow.cs           # partial: lifecycle + Draw + shop list table
@@ -111,11 +112,23 @@ confusing CS0117 error.
 
 ## Localization
 
-`Localization/Strings.cs` is a single static class with `T(en, ja)` helpers and
-a `SetLanguage(bool)` toggle that flips a static field. There's no resource file
-or culture switch — adding a string is a one-liner: declare the property,
-return `T("english", "日本語")`. `SetLanguage` is called from `Plugin` ctor and
-from the *Use Japanese UI* checkbox in `ConfigWindow`.
+`Localization/Strings.cs` is a single static class with a six-arg `T()` helper
+that picks one of `(en, ja, de, fr, zh, ko)` based on the current
+`Language` enum. Adding a string is a one-liner: declare the property and
+return `T("english", "日本語", "Deutsch", "Français", "简体中文", "한국어")`.
+
+Language selection lives in `Configuration.Language` (int):
+
+- `-1` = follow FFXIV client (resolves to EN/JA/DE/FR only — the global FFXIV
+  client never reports Chinese or Korean, so those are not auto-selectable).
+- `0..5` = explicit pick.
+
+`Configuration.ResolveLanguage(IClientState.ClientLanguage)` returns the final
+`Language` enum value. `Plugin` ctor calls it once at startup; `ConfigWindow`
+calls it again whenever the Language combo changes.
+
+When you add a new UI string, also add the matching translation to all six
+slots — there is no fallback chain, just `_ => en` in `T()`.
 
 ## Build
 

@@ -32,7 +32,10 @@ you while watching for the conditions that should make it stop.
 - **Safe by default.** Errors never crash the game: out of gil, inventory full,
   shop closed mid-loop, transaction stuck — each terminates the loop cleanly with
   a message in chat. Throttled at a configurable 100–1500 ms per call.
-- **Bilingual UI.** English / 日本語, toggled in settings.
+- **Six-language UI.** English, 日本語, Deutsch, Français, 简体中文, 한국어.
+  Defaults to the FFXIV client language (EN/JA/DE/FR auto-detected); Chinese
+  and Korean must be picked manually in settings since the global FFXIV
+  client never reports those languages.
 
 ## Slash commands
 
@@ -43,7 +46,8 @@ you while watching for the conditions that should make it stop.
 
 - *Anchor window next to the shop* — keep the panel docked to the right edge.
 - *Auto-open with shop* — open the panel automatically when a shop opens.
-- *Use Japanese UI*.
+- *Language* — `Auto` (follow client) / English / 日本語 / Deutsch / Français /
+  简体中文 / 한국어.
 - *Delay between purchases (ms)* — slider, 100–1500 ms.
 
 ## Scope
