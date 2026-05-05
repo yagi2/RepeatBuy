@@ -2,7 +2,7 @@
   "Author": "yagi2",
   "Name": "RepeatBuy",
   "Punchline": "Repeat-buy items from NPC shops with stop conditions.",
-  "Description": "Embeds a small overlay next to the standard NPC Shop window. Pick an item from the mirrored shop list, choose a stop condition (fixed count >99 OK, until owned, gil floor, inventory full), and the plugin handles the repeat purchases for you. Shows an estimated total cost popup before starting and warns in red if you cannot afford it. Bilingual UI (EN/JA/DE/FR).",
+  "Description": "Embeds a small overlay next to the standard NPC Shop window. Pick an item from the mirrored shop list, choose a stop condition (fixed count >99 OK, until owned, gil floor, inventory full), and the plugin handles the repeat purchases for you. Shows an estimated total cost popup before starting and warns in red if you cannot afford it. Six-language UI (EN/JA/DE/FR/ZH/KO).",
   "ApplicableVersion": "any",
   "Tags": [
     "shop",

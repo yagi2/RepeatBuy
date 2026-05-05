@@ -1,4 +1,10 @@
 bin/
 obj/
 *.user
+*.pdb
 .vs/
+.idea/
+.env
+.env.*
+.DS_Store
+Thumbs.db
