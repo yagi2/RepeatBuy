@@ -91,17 +91,16 @@ or drop `RepeatBuy.dll` and `RepeatBuy.json` into a Dalamud dev plugin folder.
 ## Release process (maintainer)
 
 1. Bump the version in `RepeatBuy.csproj` (`<Version>`) and `RepeatBuy.json`
-   (`Changelog`).
-2. `dotnet build -c Release` and verify `bin/Release/RepeatBuy/latest.zip`.
-3. Commit and push the version bump.
-4. Create a GitHub Release tagged `vX.Y.Z` and attach `latest.zip` as an asset
-   (the asset filename must remain `latest.zip`).
-5. In the [`yagi2/dalamud-plugins`](https://github.com/yagi2/dalamud-plugins)
+   (`Changelog`), then commit and push to `main`.
+2. Create a GitHub Release tagged `vX.Y.Z`. **No need to attach a binary** — the
+   `Release` GitHub Actions workflow builds the plugin on `windows-latest` and
+   uploads `latest.zip` automatically when the release is published.
+3. In the [`yagi2/dalamud-plugins`](https://github.com/yagi2/dalamud-plugins)
    repo, update this plugin's entry in `repo.json` (`AssemblyVersion`,
    `Changelog`) and push to `main`.
 
-Once both pushes land, Dalamud picks up the new version on its next plugin-list
-refresh.
+Once the workflow finishes (~1 min) and the index push lands, Dalamud picks up
+the new version on its next plugin-list refresh.
 
 ## License
 

@@ -1,0 +1,43 @@
+name: Release
+
+on:
+  release:
+    types: [published]
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Download Dalamud reference assemblies
+        shell: pwsh
+        run: |
+          $dest = "$env:AppData\XIVLauncher\addon\Hooks\dev"
+          New-Item -ItemType Directory -Force -Path $dest | Out-Null
+          Invoke-WebRequest `
+            -Uri 'https://goatcorp.github.io/dalamud-distrib/stg/latest.zip' `
+            -OutFile dalamud.zip
+          Expand-Archive -Force -Path dalamud.zip -DestinationPath $dest
+
+      - name: Build
+        run: dotnet build -c Release
+
+      - name: Attach plugin archive to release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        shell: pwsh
+        run: |
+          gh release upload "${{ github.event.release.tag_name }}" `
+            "bin/Release/RepeatBuy/latest.zip" `
+            --clobber
