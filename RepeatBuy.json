@@ -1,0 +1,16 @@
+{
+  "Author": "magical.reisen",
+  "Name": "RepeatBuy",
+  "Punchline": "Repeatedly buy items from NPC shops with stop conditions.",
+  "Description": "Adds a small overlay next to the standard NPC Shop window so you can mass-buy the currently selected item. Supports four stop conditions: fixed count (allows >99), buy until you own N total, buy until gil drops below a threshold, and buy until inventory is full. Shows an estimated total cost before starting and warns if you cannot afford it.",
+  "ApplicableVersion": "any",
+  "Tags": [
+    "shop",
+    "vendor",
+    "npc",
+    "buy",
+    "merchant"
+  ],
+  "RepoUrl": "",
+  "Changelog": "0.1.0.0 — Initial release."
+}
