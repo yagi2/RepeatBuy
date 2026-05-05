@@ -16,7 +16,9 @@ public sealed class ConfigWindow : Window, IDisposable
         ((int)Language.English,  () => Strings.LanguageNameEnglish),
         ((int)Language.Japanese, () => Strings.LanguageNameJapanese),
         ((int)Language.German,   () => Strings.LanguageNameGerman),
-        ((int)Language.French,   () => Strings.LanguageNameFrench)
+        ((int)Language.French,   () => Strings.LanguageNameFrench),
+        ((int)Language.Chinese,  () => Strings.LanguageNameChinese),
+        ((int)Language.Korean,   () => Strings.LanguageNameKorean)
     };
 
     public ConfigWindow(Configuration configuration)

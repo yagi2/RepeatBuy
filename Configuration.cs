@@ -13,7 +13,9 @@ public sealed class Configuration : IPluginConfiguration
     public bool AutoOpenOnShop { get; set; } = true;
 
     /// <summary>
-    /// 0=English, 1=Japanese, 2=German, 3=French. -1 means "follow client language".
+    /// 0=English, 1=Japanese, 2=German, 3=French, 4=Chinese, 5=Korean.
+    /// -1 means "follow client language" (resolves to EN/JA/DE/FR only since
+    /// the FFXIV global client never reports Chinese or Korean).
     /// </summary>
     public int Language { get; set; } = -1;
 
@@ -27,7 +29,7 @@ public sealed class Configuration : IPluginConfiguration
 
     public Language ResolveLanguage(Dalamud.Game.ClientLanguage clientLanguage)
     {
-        if (Language >= 0 && Language <= 3)
+        if (Language >= 0 && Language <= 5)
             return (Language)Language;
 
         return clientLanguage switch
