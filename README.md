@@ -1,6 +1,8 @@
 # RepeatBuy
 
-Dalamud plugin (API 15) that lets you mass-buy items from standard FFXIV NPC shops.
+<p align="center"><img src="images/icon.png" alt="RepeatBuy icon" width="160"></p>
+
+Dalamud plugin for FFXIV that lets you mass-buy items from standard NPC shops.
 A small overlay docks beside the shop window with a mirror of the shop's item list,
 four stop conditions, and a confirmation popup that shows the estimated total cost
 before any gil leaves your wallet.
