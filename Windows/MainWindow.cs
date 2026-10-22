@@ -1,6 +1,7 @@
 using System;
 using System.Numerics;
 using Dalamud.Bindings.ImGui;
+using Dalamud.Game.Inventory.InventoryEventArgTypes;
 using Dalamud.Interface.Windowing;
 using RepeatBuy.Localization;
 
@@ -43,6 +44,7 @@ public partial class MainWindow : Window, IDisposable
         if (!frameworkHooked)
         {
             Plugin.Framework.Update += OnFrameworkUpdate;
+            Plugin.GameInventory.InventoryChangedRaw += OnInventoryChangedRaw;
             frameworkHooked = true;
         }
     }
@@ -52,12 +54,16 @@ public partial class MainWindow : Window, IDisposable
         if (frameworkHooked)
         {
             Plugin.Framework.Update -= OnFrameworkUpdate;
+            Plugin.GameInventory.InventoryChangedRaw -= OnInventoryChangedRaw;
             frameworkHooked = false;
         }
     }
 
     public override void PreOpenCheck()
     {
+        if (HoldOpenDuringPurchase())
+            return;
+
         if (!IsShopUIOpen())
         {
             if (purchaseSession.Running)
@@ -69,11 +75,19 @@ public partial class MainWindow : Window, IDisposable
 
     public override void Draw()
     {
-        if (configuration.AnchorWindow)
+        WindowName = Strings.WindowTitle + "###RepeatBuyMain";
+
+        if (configuration.AnchorWindow && IsShopUIOpen())
             AnchorToShop();
 
         if (!IsShopUIOpen())
         {
+            if (HoldOpenDuringPurchase())
+            {
+                DrawRunningState();
+                return;
+            }
+
             if (purchaseSession.Running)
                 CancelPurchase();
             chosen = null;
@@ -103,18 +117,43 @@ public partial class MainWindow : Window, IDisposable
         if (chosen == null) return;
         var current = chosen.Value;
 
-        // re-resolve the chosen item by ItemId so that the displayed price and
-        // owned count stay live as the underlying list updates
-        foreach (var row in rows)
+        if (TryMatchListing(rows, current, out var match))
         {
-            if (row.ItemId == current.ItemId && row.IsHQ == current.IsHQ)
-            {
-                chosen = row;
-                return;
-            }
+            chosen = match;
+            return;
         }
         // item disappeared from the list — drop selection
         chosen = null;
+    }
+
+    internal static bool TryMatchListing(
+        System.Collections.Generic.List<ShopItemInfo> rows,
+        ShopItemInfo wanted,
+        out ShopItemInfo match)
+    {
+        ShopItemInfo? fallback = null;
+        foreach (var row in rows)
+        {
+            if (row.ItemId != wanted.ItemId || row.IsHQ != wanted.IsHQ || row.UnitPrice != wanted.UnitPrice)
+                continue;
+
+            if (row.RealIndex == wanted.RealIndex)
+            {
+                match = row;
+                return true;
+            }
+
+            fallback ??= row;
+        }
+
+        if (fallback.HasValue)
+        {
+            match = fallback.Value;
+            return true;
+        }
+
+        match = default;
+        return false;
     }
 
     private void DrawHeader()
@@ -123,7 +162,7 @@ public partial class MainWindow : Window, IDisposable
 
         if (chosen.HasValue)
         {
-            int owned = CountOwned(chosen.Value.ItemId);
+            int owned = CountOwned(chosen.Value.ItemId, chosen.Value.IsHQ);
             ImGui.TextUnformatted($"{Strings.SelectedItem} {chosen.Value.Name}");
             ImGui.TextUnformatted($"{Strings.UnitPrice} {chosen.Value.UnitPrice:N0}   {Strings.Owned} {owned:N0}");
         }
@@ -172,7 +211,9 @@ public partial class MainWindow : Window, IDisposable
 
             bool selected = chosen.HasValue
                             && chosen.Value.ItemId == row.ItemId
-                            && chosen.Value.IsHQ == row.IsHQ;
+                            && chosen.Value.IsHQ == row.IsHQ
+                            && chosen.Value.UnitPrice == row.UnitPrice
+                            && chosen.Value.RealIndex == row.RealIndex;
 
             if (ImGui.Selectable($"{row.Name}##rb_row_{i}", selected, ImGuiSelectableFlags.SpanAllColumns))
             {
@@ -183,7 +224,7 @@ public partial class MainWindow : Window, IDisposable
             ImGui.TextUnformatted($"{row.UnitPrice:N0}");
 
             ImGui.TableSetColumnIndex(2);
-            int held = CountOwned(row.ItemId);
+            int held = CountOwned(row.ItemId, row.IsHQ);
             ImGui.TextUnformatted($"{held:N0}");
         }
 

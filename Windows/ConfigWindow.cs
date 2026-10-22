@@ -38,6 +38,8 @@ public sealed class ConfigWindow : Window, IDisposable
 
     public override void Draw()
     {
+        WindowName = Strings.ConfigWindowTitle + "###RepeatBuyConfig";
+
         bool anchor = configuration.AnchorWindow;
         if (ImGui.Checkbox(Strings.SettingsAnchor, ref anchor))
         {
@@ -49,6 +51,13 @@ public sealed class ConfigWindow : Window, IDisposable
         if (ImGui.Checkbox(Strings.SettingsAutoOpen, ref autoOpen))
         {
             configuration.AutoOpenOnShop = autoOpen;
+            configuration.Save();
+        }
+
+        bool autoConfirm = configuration.AutoAcceptShopConfirm;
+        if (ImGui.Checkbox(Strings.SettingsAutoConfirm, ref autoConfirm))
+        {
+            configuration.AutoAcceptShopConfirm = autoConfirm;
             configuration.Save();
         }
 

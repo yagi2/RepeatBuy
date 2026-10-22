@@ -102,7 +102,22 @@ public static class Strings
     public static string ConfirmStart => T("Start", "開始", "Starten", "Démarrer", "开始", "시작");
 
     public static string Running => T("Running…", "実行中…", "Läuft…", "En cours…", "进行中…", "진행 중…");
-    public static string Bought => T("Bought {0}", "{0} 個購入", "{0} gekauft", "{0} acheté(s)", "已购买 {0}", "{0}개 구매");
+    public static string StatusWaiting => T(
+        "Waiting for the purchase to finish…",
+        "購入の完了を待っています…",
+        "Warte auf den Kaufabschluss…",
+        "En attente de la fin de l'achat…",
+        "正在等待购买完成…",
+        "구매가 끝날 때까지 대기 중…");
+    public static string StatusConfirming => T(
+        "Confirming the purchase…",
+        "購入を確認しています…",
+        "Kauf wird bestätigt…",
+        "Confirmation de l'achat…",
+        "正在确认购买…",
+        "구매를 확인하는 중…");
+    public static string Bought => T("Received {0}", "{0} 個受け取り", "{0} erhalten", "{0} reçu(s)", "已收到 {0}", "{0}개 수령");
+    public static string GilSpent => T("Gil spent: {0}", "使用ギル: {0}", "Gil ausgegeben: {0}", "Gils dépensés : {0}", "已花费金币: {0}", "사용한 길: {0}");
 
     public static string Reasons_GilLow => T(
         "Stopped: gil floor reached.",
@@ -160,6 +175,48 @@ public static class Strings
         "Arrêt : aucun article sélectionné.",
         "已停止：未选择商品。",
         "정지: 상품이 선택되지 않았습니다.");
+    public static string Reasons_NotReceived => T(
+        "Stopped: the purchase did not arrive.",
+        "停止: 購入が届きませんでした。",
+        "Gestoppt: Der Kauf ist nicht angekommen.",
+        "Arrêt : l'achat n'est pas arrivé.",
+        "已停止：购买没有到账。",
+        "정지: 구매한 물건이 도착하지 않았습니다.");
+    public static string Reasons_Buyback => T(
+        "Stopped: the buyback tab is open.",
+        "停止: バイバックタブが開いています。",
+        "Gestoppt: Der Rückkauf-Tab ist offen.",
+        "Arrêt : l'onglet de rachat est ouvert.",
+        "已停止：回购标签页处于打开状态。",
+        "정지: 재매입 탭이 열려 있습니다.");
+    public static string Reasons_Retainer => T(
+        "Stopped: this is a retainer trade.",
+        "停止: リテイナーとの取引です。",
+        "Gestoppt: Dies ist ein Diener-Handel.",
+        "Arrêt : il s'agit d'un échange avec un servant.",
+        "已停止：这是与雇员的交易。",
+        "정지: 집사와의 거래입니다.");
+    public static string Reasons_NotBuyMode => T(
+        "Stopped: switch to the buy tab.",
+        "停止: 購入タブに切り替えてください。",
+        "Gestoppt: Wechsle zum Kauf-Tab.",
+        "Arrêt : passe à l'onglet d'achat.",
+        "已停止：请切换到购买标签页。",
+        "정지: 구매 탭으로 전환하세요.");
+    public static string Reasons_Unique => T(
+        "Stopped: you already own this unique item.",
+        "停止: このユニークアイテムは所持済みです。",
+        "Gestoppt: Dieser einzigartige Gegenstand ist bereits im Besitz.",
+        "Arrêt : cet objet unique est déjà possédé.",
+        "已停止：你已经拥有这个独特物品。",
+        "정지: 이 고유 아이템을 이미 보유하고 있습니다.");
+    public static string Reasons_RowGone => T(
+        "Stopped: that item is no longer in the shop list.",
+        "停止: その商品はショップ一覧にありません。",
+        "Gestoppt: Der Artikel ist nicht mehr in der Händlerliste.",
+        "Arrêt : cet article n'est plus dans la liste.",
+        "已停止：该物品已不在商店列表中。",
+        "정지: 그 항목이 상점 목록에 더 이상 없습니다.");
     public static string Reasons_Unexpected => T(
         "Stopped: unexpected error.",
         "停止: 予期しないエラーが発生しました。",
@@ -175,6 +232,13 @@ public static class Strings
         "Ancrer la fenêtre près du marchand",
         "将窗口固定在商店旁",
         "상점 옆에 창 고정");
+    public static string SettingsAutoConfirm => T(
+        "Accept the shop confirmation dialog",
+        "ショップの確認ダイアログを自動で承諾",
+        "Händler-Bestätigung automatisch annehmen",
+        "Accepter la confirmation du marchand",
+        "自动接受商店确认对话框",
+        "상점 확인 창 자동 수락");
     public static string SettingsAutoOpen => T(
         "Auto-open with shop",
         "ショップを開いたら自動表示",
@@ -192,6 +256,34 @@ public static class Strings
         "구매 간격 (밀리초)");
     public static string SettingsSave => T("Save", "保存", "Speichern", "Enregistrer", "保存", "저장");
 
+    public static string BuyBlockedNoSelection => T(
+        "Pick an item from the list first.",
+        "先にリストから商品を選んでください。",
+        "Wähle zuerst einen Artikel aus der Liste.",
+        "Choisis d'abord un article dans la liste.",
+        "请先从列表中选择一个物品。",
+        "먼저 목록에서 항목을 선택하세요.");
+    public static string BuyBlockedNoPrice => T(
+        "This item has no gil price.",
+        "この商品にはギル価格がありません。",
+        "Dieser Artikel hat keinen Gil-Preis.",
+        "Cet article n'a pas de prix en gils.",
+        "这个物品没有金币价格。",
+        "이 항목에는 길 가격이 없습니다.");
+    public static string BuyBlockedNothing => T(
+        "Nothing left to buy for this stop condition.",
+        "この停止条件では購入できるものがありません。",
+        "Für diese Stoppbedingung bleibt nichts zu kaufen.",
+        "Rien à acheter pour cette condition d'arrêt.",
+        "按这个停止条件，已经没有可买的数量。",
+        "이 정지 조건으로는 더 살 수량이 없습니다.");
+    public static string EstimateCapped => T(
+        "Quantity was reduced to what you can afford and carry.",
+        "所持金と所持スペースに合わせて数量を減らしました。",
+        "Menge wurde auf das begrenzt, was du bezahlen und tragen kannst.",
+        "La quantité a été réduite à ce que tu peux payer et porter.",
+        "数量已减少到你付得起且带得走的范围。",
+        "수량을 지불하고 소지할 수 있는 범위로 줄였습니다.");
     public static string TipUseShop => T(
         "Pick an item from the list, then choose a stop condition.",
         "リストから商品を選び、停止条件を指定してください。",

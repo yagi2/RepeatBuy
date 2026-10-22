@@ -53,7 +53,12 @@ public sealed class Plugin : IDalamudPlugin
         ShopWatcher = new ShopWatcher(
             framework: Framework,
             isShopOpen: MainWindow.IsShopUIOpen,
-            setMainWindowOpen: open => MainWindow.IsOpen = open,
+            setMainWindowOpen: open =>
+            {
+                if (!open && MainWindow.HoldOpenDuringPurchase())
+                    return;
+                MainWindow.IsOpen = open;
+            },
             isEnabled: () => Configuration.AutoOpenOnShop
         );
     }

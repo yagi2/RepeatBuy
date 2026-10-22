@@ -13,5 +13,5 @@
   ],
   "RepoUrl": "https://github.com/yagi2/RepeatBuy",
   "IconUrl": "https://raw.githubusercontent.com/yagi2/RepeatBuy/main/images/icon.png",
-  "Changelog": "0.1.0.0 — Initial release."
+  "Changelog": "0.1.1.0 — Purchases wait until the items arrive. A skipped or unconfirmed buy is no longer reported as finished, and counts above 99 continue after each batch. Stop conditions use the real inventory and gil change."
 }

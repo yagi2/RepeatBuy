@@ -7,7 +7,7 @@ namespace RepeatBuy;
 [Serializable]
 public sealed class Configuration : IPluginConfiguration
 {
-    public int Version { get; set; } = 2;
+    public int Version { get; set; } = 3;
 
     public bool AnchorWindow { get; set; } = true;
     public bool AutoOpenOnShop { get; set; } = true;
@@ -26,6 +26,12 @@ public sealed class Configuration : IPluginConfiguration
     public long LastGilFloor { get; set; } = 0;
 
     public int SelectedMode { get; set; } = 0;
+
+    /// <summary>
+    /// When a shop confirmation appears after this plugin sends a buy, click Yes.
+    /// Dialogs that were already open are left alone.
+    /// </summary>
+    public bool AutoAcceptShopConfirm { get; set; } = true;
 
     public Language ResolveLanguage(Dalamud.Game.ClientLanguage clientLanguage)
     {

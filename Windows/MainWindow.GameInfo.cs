@@ -17,7 +17,23 @@ public partial class MainWindow
 
     private Vector2 lastAnchor = new(float.NaN, float.NaN);
 
-    public readonly record struct ShopItemInfo(int RealIndex, int VisibleIndex, uint ItemId, long UnitPrice, string Name, int OwnedAtVendor, bool IsHQ);
+    public const uint HqItemIdOffset = 1_000_000;
+
+    public readonly record struct ShopItemInfo(
+        int RealIndex,
+        int VisibleIndex,
+        uint ItemId,
+        long UnitPrice,
+        string Name,
+        int OwnedAtVendor,
+        bool IsHQ,
+        bool IsUnique,
+        int ShopStack);
+
+    public readonly record struct BagSpace(int FreeSlots, int PartialRoom, int MaxStack)
+    {
+        public long Capacity => PurchaseMath.StackCapacity(FreeSlots, MaxStack, PartialRoom);
+    }
 
     internal unsafe bool IsShopUIOpen()
     {
@@ -79,12 +95,26 @@ public partial class MainWindow
 
         float scaledGap = AnchorGapX * ImGui.GetIO().FontGlobalScale;
         var targetPos = new Vector2(uiPos.X + uiSize.X + scaledGap, uiPos.Y);
+        targetPos = ClampToViewport(targetPos);
 
         const float SnapDistanceSquared = 1f;
         if (!float.IsNaN(lastAnchor.X) && Vector2.DistanceSquared(targetPos, lastAnchor) < SnapDistanceSquared)
             return;
 
         Position = lastAnchor = targetPos;
+    }
+
+    private static Vector2 ClampToViewport(Vector2 target)
+    {
+        var viewport = ImGui.GetMainViewport();
+        var windowSize = ImGui.GetWindowSize();
+        float minX = viewport.WorkPos.X;
+        float minY = viewport.WorkPos.Y;
+        float maxX = Math.Max(minX, viewport.WorkPos.X + viewport.WorkSize.X - windowSize.X);
+        float maxY = Math.Max(minY, viewport.WorkPos.Y + viewport.WorkSize.Y - windowSize.Y);
+        return new Vector2(
+            Math.Clamp(target.X, minX, maxX),
+            Math.Clamp(target.Y, minY, maxY));
     }
 
     public void ClearAnchor()
@@ -97,6 +127,20 @@ public partial class MainWindow
     /// Resolves the active ShopEventHandler by walking AgentShop.EventReceiver →
     /// AgentProxy.Handler. Returns null when the shop is not active.
     /// </summary>
+    internal static unsafe bool IsShopAgentActive()
+    {
+        try
+        {
+            var agent = AgentShop.Instance();
+            return agent != null && agent->IsAgentActive();
+        }
+        catch (Exception ex)
+        {
+            Plugin.Log.Warning(ex, "[RepeatBuy] IsShopAgentActive failed");
+            return false;
+        }
+    }
+
     internal static unsafe ShopEventHandler* GetShopEventHandler()
     {
         try
@@ -152,7 +196,9 @@ public partial class MainWindow
                     UnitPrice: entry.PriceBuy,
                     Name: name,
                     OwnedAtVendor: entry.NumOwned,
-                    IsHQ: entry.IsHQ
+                    IsHQ: entry.IsHQ,
+                    IsUnique: entry.IsUnique,
+                    ShopStack: Math.Max(0, entry.StackSize)
                 ));
             }
         }
@@ -187,27 +233,35 @@ public partial class MainWindow
         return inv->GetItemCountInContainer(GilItemId, InventoryType.Currency);
     }
 
-    internal static unsafe int CountOwned(uint itemId)
+    internal static uint ToInventoryItemId(uint itemId, bool hq)
+        => itemId == 0 ? 0 : hq ? itemId + HqItemIdOffset : itemId;
+
+    internal static unsafe int CountOwned(uint itemId, bool hq = false)
     {
-        if (itemId == 0) return 0;
+        uint inventoryId = ToInventoryItemId(itemId, hq);
+        if (inventoryId == 0) return 0;
         var inv = InventoryManager.Instance();
         if (inv == null) return 0;
 
         int total = 0;
         foreach (var p in OwnedSearchPages)
         {
-            int c = inv->GetItemCountInContainer(itemId, p);
+            int c = inv->GetItemCountInContainer(inventoryId, p);
             if (c > 0) total += c;
         }
         return total;
     }
 
-    internal static unsafe int CountInventoryFreeSlots()
+    internal static unsafe BagSpace MeasureBagSpace(uint itemId, bool hq)
     {
+        int maxStack = GetItemMaxStack(itemId);
+        uint inventoryId = ToInventoryItemId(itemId, hq);
         var inv = InventoryManager.Instance();
-        if (inv == null) return 0;
+        if (inv == null || inventoryId == 0)
+            return new BagSpace(0, 0, maxStack);
 
         int free = 0;
+        int partial = 0;
         foreach (var page in MainBagPages)
         {
             var container = inv->GetInventoryContainer(page);
@@ -216,10 +270,17 @@ public partial class MainWindow
             {
                 var slot = container->GetInventorySlot(s);
                 if (slot == null || slot->ItemId == 0)
+                {
                     free++;
+                    continue;
+                }
+
+                if (slot->ItemId == inventoryId && slot->Quantity < maxStack)
+                    partial += maxStack - slot->Quantity;
             }
         }
-        return free;
+
+        return new BagSpace(free, partial, maxStack);
     }
 
     internal static int GetItemMaxStack(uint itemId)
